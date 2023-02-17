@@ -13,10 +13,10 @@ read_data<-function(which_data='monthly'){
   ##change which_data for different m3 series
   json_file = switch(
     which_data,
-    "monthly"= lapply(readLines("https://raw.githubusercontent.com/tavinweeda/Capstone/main/OneDrive/Desktop/Git_Cap/M3_Json/monthly.json"), fromJSON),
-    "yearly"= lapply(readLines("https://raw.githubusercontent.com/tavinweeda/Capstone/main/OneDrive/Desktop/Git_Cap/M3_Json/yearly.json"), fromJSON),
-    "quarterly"= lapply(readLines("https://raw.githubusercontent.com/tavinweeda/Capstone/main/OneDrive/Desktop/Git_Cap/M3_Json/quarterly.json"), fromJSON),
-    "other"= lapply(readLines("https://raw.githubusercontent.com/tavinweeda/Capstone/main/OneDrive/Desktop/Git_Cap/M3_Json/other.json"), fromJSON),
+    "monthly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/monthly.json"), fromJSON),
+    "yearly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/yearly.json"), fromJSON),
+    "quarterly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/quarterly.json"), fromJSON),
+    "other"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/other.json"), fromJSON),
   )
 
   return(json_file)
