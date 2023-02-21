@@ -1,1 +1,4 @@
-json_file<-get_Phi_Thetas_aic(json_file)
+
+json_file<-fix_start(json_file)
+
+json_file<-create_timeseries(json_file)

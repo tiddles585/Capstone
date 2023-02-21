@@ -34,6 +34,7 @@ source('Functions.R')
 source('Preprocess.R')
 #source('Cochrane_Orcutt.R')
 #source('ARIMA.R')
+source('HW.R')
 source('sMAPE.R')
 ##write sMAPES to file
 write_sMAPES(my_sMAPES,folder,name)

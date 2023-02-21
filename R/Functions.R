@@ -286,15 +286,13 @@ fix_start = function(json_file) {
 
 create_timeseries = function(json_file) {
   
-  ts_holder = list()
-  
   json_file<-lapply(json_file,function(x) {
-    x$HW_timeseries = lapply(json_file,  function(i) ts(data = x$target,
-                                                        start = c(x$series_features$year[[1]], 
-                                                                  x$series_features$month[[1]]),
+    x$HW_timeseries[1] = lapply(json_file,  function(i) ts(data = x$target,
+                                                        start = c(x$series_features$year, 
+                                                                  x$series_features$month),
                                                         frequency = 12))
     
-    return(x) ##
+    return(x)
   })
   
   return(json_file)
