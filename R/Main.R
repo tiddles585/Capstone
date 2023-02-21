@@ -21,8 +21,8 @@ rm(list=ls())
   ##Folder can be 'ARIMA_Forecasts','HW_Forecasts, or 'MLP_Forecasts' at the moment
   ##Naming convention: <Model>_<Trend_Remover>_<Seasonality_Remover>_forecast<horizons>
 
-    name='ARIMA_CochraneOrc_forecast_1428'
-    folder = 'ARIMA_Forecasts'
+    name='HW_forecast_1428'
+    folder = 'HW_Forecasts'
 
 ###############
 ###############
@@ -32,8 +32,8 @@ rm(list=ls())
 
 source('Functions.R')
 source('Preprocess.R')
-source('Cochrane_Orcutt.R')
-source('ARIMA.R')
+#source('Cochrane_Orcutt.R')
+#source('ARIMA.R')
 source('sMAPE.R')
 ##write sMAPES to file
 write_sMAPES(my_sMAPES,folder,name)
