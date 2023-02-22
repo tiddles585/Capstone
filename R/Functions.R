@@ -211,62 +211,42 @@ forecast_arima<-function(json_file,horizon=0){
   return(fore_holder)
 }
 
-
+#######################################################################################-
+# START DUY'S HOLT-WINTER'S
 #######################################################################################-
 
+forecast_hw = function(json_file, horizon=0) {
+  
+  fore_holder<-invisible(lapply(json_file,function(x){
+    # seasonal='additive' and exponential=FALSE means model="AAA" in ets(), or additive Holt-Winter's
+    # addi_holder = hw(x$HW_timeseries, h=horizon, seasonal='additive', exponential=FALSE)$mean
+    
+    # seasonal='multiplicative' and exponential=FALSE means model="MAM" in ets(), or multiplicative Holt-Winter's
+    multi_holder = hw(x$HW_timeseries, h=horizon, seasonal='multiplicative', exponential=FALSE)$mean
+    
+    return(list(#'forecasts'=addi_holder#,
+                'forecasts'=multi_holder
+      
+    ))
+  }))
 
-write_forecasts<-function(forecasts,name,folder){
+  # Source: https://otexts.com/fpp2/holt-winters.html
+  # There are two variations to this method that differ in the nature of the seasonal component. 
+  # The additive method is preferred when the seasonal variations are roughly constant through the series, 
+  # while the multiplicative method is preferred when the seasonal variations are changing proportional to the level of the series. 
+  
+  # With the additive method, the seasonal component is expressed in absolute terms in the scale of the observed series, 
+  # and in the level equation the series is seasonally adjusted by subtracting the seasonal component. 
+  # Within each year, the seasonal component will add up to approximately zero. 
+  # 
+  # With the multiplicative method, the seasonal component is expressed in relative terms (percentages), 
+  # and the series is seasonally adjusted by dividing through by the seasonal component. 
+  # Within each year, the seasonal component will sum up to approximately m.
 
-  saveRDS(forecasts, file=paste0(folder,'/',name,".RData"))
-
+  
+  return(fore_holder)
 }
 
-
-
-#######################################################################################-
-
-sMAPE_calculate<-function(json_file,forecast_object){
-  #sMAPE_holder<-c()
-
-  ##Gets forecasts and originals for horizon passed.
-      my_sMAPES<-lapply(horizon,function(h) {
-
-      targets<-lapply(which_series,function(x) {
-                        l<-length(json_file[[x]]$target)
-                        json_file[[x]]$target[(l+1-h):l]
-                        })
-      fores<-lapply(forecast_object[[h-1]],function(x) x$forecasts)
-
-      ##indexes into targets and fores
-      sMAPE<-sapply(1:length(targets),function(ind) (2/(h+1))*sum((abs(targets[[ind]]-fores[[ind]])/(abs(targets[[ind]])+abs(fores[[ind]])))*100))
-      return(sMAPE)
-
-      fores<-lapply(forecast_object[[h-1]],function(x) x$forecasts)
-
-      lapply(forecast_object[[h-1]],function(x) lapply(1:which_series,function(ind) x[[ind]]$sMAPE==sMAPE[ind]))
-      })
-
-     return(my_sMAPES)
-}
-
-
-
-#######################################################################################-
-
-
-
-
-read_forecasts<-function(folder,name){
-
-
-  read_in<-readRDS(paste0(folder,'/',name,".RData"))
-
-  return(read_in)
-
-}
-
-#######################################################################################-
-# DUY'S HOLT-WINTER'S
 #######################################################################################-
 
 fix_start = function(json_file) {
@@ -287,15 +267,72 @@ fix_start = function(json_file) {
 create_timeseries = function(json_file) {
   
   json_file<-lapply(json_file,function(x) {
-    x$HW_timeseries[1] = lapply(json_file,  function(i) ts(data = x$target,
-                                                        start = c(x$series_features$year, 
-                                                                  x$series_features$month),
-                                                        frequency = 12))
+    x$HW_timeseries = ts(data = x$target,
+                         start = c(x$series_features$year, x$series_features$month),
+                         frequency = 12)
     
     return(x)
   })
   
   return(json_file)
+}
+
+
+#######################################################################################-
+# END DUY'S HOLT-WINTER'S
+#######################################################################################-
+
+#######################################################################################-
+
+
+write_forecasts<-function(forecasts,name,folder){
+
+  saveRDS(forecasts, file=paste0(folder,'/',name,".RData"))
+
+}
+
+
+
+#######################################################################################-
+
+sMAPE_calculate<-function(json_file,forecast_object){
+  #sMAPE_holder<-c()
+
+  ##Gets forecasts and originals for horizon passed.
+      my_sMAPES<-lapply(horizon,function(h) {
+
+        targets<-lapply(which_series,function(x) {
+                          l<-length(json_file[[x]]$target)
+                          json_file[[x]]$target[(l+1-h):l]
+                          })
+        fores<-lapply(forecast_object[[h-1]],function(x) x$forecasts)
+  
+        ##indexes into targets and fores
+        sMAPE<-sapply(1:length(targets),function(ind) (2/(h+1))*sum((abs(targets[[ind]]-fores[[ind]])/(abs(targets[[ind]])+abs(fores[[ind]])))*100))
+        return(sMAPE)
+  
+        fores<-lapply(forecast_object[[h-1]],function(x) x$forecasts)
+  
+        lapply(forecast_object[[h-1]],function(x) lapply(1:which_series,function(ind) x[[ind]]$sMAPE==sMAPE[ind]))
+      })
+
+     return(my_sMAPES)
+}
+
+
+
+#######################################################################################-
+
+
+
+
+read_forecasts<-function(folder,name){
+
+
+  read_in<-readRDS(paste0(folder,'/',name,".RData"))
+
+  return(read_in)
+
 }
 
 #######################################################################################-

@@ -21,7 +21,8 @@ rm(list=ls())
   ##Folder can be 'ARIMA_Forecasts','HW_Forecasts, or 'MLP_Forecasts' at the moment
   ##Naming convention: <Model>_<Trend_Remover>_<Seasonality_Remover>_forecast<horizons>
 
-    name='HW_forecast_1428'
+    name='HW_ADDI_forecast_1428'
+    #name='HW_MULTI_forecast_1428'
     folder = 'HW_Forecasts'
 
 ###############
@@ -35,6 +36,8 @@ source('Preprocess.R')
 #source('Cochrane_Orcutt.R')
 #source('ARIMA.R')
 source('HW.R')
+    
+    
 source('sMAPE.R')
 ##write sMAPES to file
 write_sMAPES(my_sMAPES,folder,name)
@@ -50,7 +53,7 @@ write_sMAPES(my_sMAPES,folder,name)
 ##summary
 
 ##Prints one horizon at a time + a histogram
-sMAPE_summary(my_sMAPES,h=10)
+sMAPE_summary(my_sMAPES,h=18)
 
 #Prints mean, median, min and max of all horizons at once
 summary_all_horizons(my_sMAPES)
