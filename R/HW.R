@@ -6,3 +6,8 @@ json_file<-create_timeseries(json_file)
 HW_Forecasts<-lapply(horizon,function(x) forecast_hw(json_file[which_series],horizon=x))
 
 write_forecasts(HW_Forecasts,folder = folder,name=name)
+
+
+
+# OPTIONAL, FREE SPACE IN JSON
+json_file<-remove_timeseries(json_file)

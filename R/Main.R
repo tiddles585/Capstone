@@ -35,8 +35,9 @@ source('Functions.R')
 source('Preprocess.R')
 #source('Cochrane_Orcutt.R')
 #source('ARIMA.R')
-source('HW.R')
     
+# BE CAREFUL WHEN RUNNING, SAYS ADDI BUT MIGHT HAVE MULTI FORECASTS
+source('HW.R')
     
 source('sMAPE.R')
 ##write sMAPES to file

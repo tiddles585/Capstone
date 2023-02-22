@@ -277,6 +277,13 @@ create_timeseries = function(json_file) {
   return(json_file)
 }
 
+remove_timeseries = function(json_file) {
+  json_file<-lapply(json_file, function(x) {
+    x$HW_timeseries <- NULL
+    return(x)
+  })
+  return(json_file)
+}
 
 #######################################################################################-
 # END DUY'S HOLT-WINTER'S
