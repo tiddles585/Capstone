@@ -13,10 +13,17 @@ read_data<-function(which_data='monthly'){
   ##change which_data for different m3 series
   json_file = switch(
     which_data,
+<<<<<<< HEAD
     "monthly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/monthly.json"), fromJSON),
     "yearly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/yearly.json"), fromJSON),
     "quarterly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/quarterly.json"), fromJSON),
     "other"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/other.json"), fromJSON),
+=======
+    "monthly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/main/M3_Json/monthly.json"), fromJSON),
+    "yearly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/main/M3_Json/yearly.json"), fromJSON),
+    "quarterly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/main/M3_Json/quarterly.json"), fromJSON),
+    "other"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/main/M3_Json/other.json"), fromJSON),
+>>>>>>> main
   )
 
   return(json_file)
@@ -43,7 +50,10 @@ series_features<-function(json_file){
   ##stores information as seasonality, difference, phis thetas, and overall series length
 
   json_file<-lapply(json_file,function(x){
-    x$series_features<-list('p'=0,'q'=0,'d'=0,'s'=0,'series_length'=length(x$target),'phi'=0,'theta'=0)
+    x$series_features<-list('p'=0,'q'=0,'d'=0,'s'=0,
+                            'series_length'=length(x$target),
+                            'phi'=0,'theta'=0,
+                            'year'=0,'month'=0)
     return(x)})
 
 
@@ -262,6 +272,38 @@ read_forecasts<-function(folder,name){
 
 }
 
+#######################################################################################-
+# DUY'S HOLT-WINTER'S
+#######################################################################################-
+
+fix_start = function(json_file) {
+  
+  json_file<-lapply(json_file,function(x) {
+    x$series_features$year = strftime(x$start, "%Y")
+    x$series_features$month = strftime(x$start, "%m")
+    
+    
+    return(x)
+  })
+  
+  return(json_file)
+}
+
+#######################################################################################-
+
+create_timeseries = function(json_file) {
+  
+  json_file<-lapply(json_file,function(x) {
+    x$HW_timeseries[1] = lapply(json_file,  function(i) ts(data = x$target,
+                                                        start = c(x$series_features$year, 
+                                                                  x$series_features$month),
+                                                        frequency = 12))
+    
+    return(x)
+  })
+  
+  return(json_file)
+}
 
 #######################################################################################-
 

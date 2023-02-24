@@ -1,9 +1,0 @@
-x<-c(1:10,rep(9,100),rep())
-y<-c(1:10,rep(3,100))
-
-plot(x,y)
-
-fit_lm<-lm(y~x)
-abline(lm(y~x))
-mean(y)
-mean(x)
