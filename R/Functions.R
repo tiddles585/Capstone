@@ -16,6 +16,7 @@ read_data<-function(which_data='monthly'){
     which_data,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "monthly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/monthly.json"), fromJSON),
     "yearly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/yearly.json"), fromJSON),
     "quarterly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/M3_Json/quarterly.json"), fromJSON),
@@ -23,11 +24,16 @@ read_data<-function(which_data='monthly'){
 =======
 =======
 >>>>>>> main
+=======
+>>>>>>> main
     "monthly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/main/M3_Json/monthly.json"), fromJSON),
     "yearly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/main/M3_Json/yearly.json"), fromJSON),
     "quarterly"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/main/M3_Json/quarterly.json"), fromJSON),
     "other"= lapply(readLines("https://raw.githubusercontent.com/tiddles585/Capstone/main/M3_Json/other.json"), fromJSON),
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> main
+=======
 >>>>>>> main
 =======
 >>>>>>> main
@@ -345,6 +351,7 @@ read_forecasts<-function(folder,name){
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #######################################################################################-
 # DUY'S HOLT-WINTER'S
 #######################################################################################-
@@ -378,6 +385,8 @@ create_timeseries = function(json_file) {
   return(json_file)
 }
 
+=======
+>>>>>>> main
 =======
 >>>>>>> main
 #######################################################################################-

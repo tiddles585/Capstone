@@ -22,7 +22,12 @@ rm(list=ls())
   ##Naming convention: <Model>_<Trend_Remover>_<Seasonality_Remover>_forecast<horizons>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     name='HW_forecast_1428'
+=======
+    name='HW_ADDI_forecast_1_20'
+    #name='HW_MULTI_forecast_1428'
+>>>>>>> main
 =======
     name='HW_ADDI_forecast_1_20'
     #name='HW_MULTI_forecast_1428'
@@ -40,12 +45,18 @@ source('Preprocess.R')
 #source('Cochrane_Orcutt.R')
 #source('ARIMA.R')
 <<<<<<< HEAD
+<<<<<<< HEAD
 source('HW.R')
 =======
+=======
+>>>>>>> main
 
 # BE CAREFUL WHEN RUNNING, SAYS ADDI BUT MIGHT HAVE MULTI FORECASTS
 source('HW.R')
 
+<<<<<<< HEAD
+>>>>>>> main
+=======
 >>>>>>> main
 source('sMAPE.R')
 ##write sMAPES to file

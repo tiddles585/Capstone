@@ -2,8 +2,11 @@
 json_file<-fix_start(json_file)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 json_file<-create_timeseries(json_file)
 =======
+=======
+>>>>>>> main
 ts_HW<-create_timeseries(json_file)
 
 
@@ -13,4 +16,7 @@ HW_Forecasts<-lapply(horizon,function(x) forecast_hw(ts_HW[which_series],horizon
 write_forecasts(HW_Forecasts,folder = folder,name=name)
 
 
+<<<<<<< HEAD
+>>>>>>> main
+=======
 >>>>>>> main
