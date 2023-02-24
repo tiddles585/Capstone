@@ -5,6 +5,7 @@ library(proxy) ## for jaccard similarity
 library(neighbr)
 library(nnfor)
 library(RDCOMClient)
+library(forecast)
 
 #######################################################################################
 
@@ -215,73 +216,61 @@ forecast_arima<-function(json_file,horizon=0){
 # START DUY'S HOLT-WINTER'S
 #######################################################################################-
 
-forecast_hw = function(json_file, horizon=0) {
-  
+forecast_hw = function(json_file, horizon=0,add_mult='additive',exponential=FALSE) {
+
   fore_holder<-invisible(lapply(json_file,function(x){
     # seasonal='additive' and exponential=FALSE means model="AAA" in ets(), or additive Holt-Winter's
-    # addi_holder = hw(x$HW_timeseries, h=horizon, seasonal='additive', exponential=FALSE)$mean
-    
     # seasonal='multiplicative' and exponential=FALSE means model="MAM" in ets(), or multiplicative Holt-Winter's
-    multi_holder = hw(x$HW_timeseries, h=horizon, seasonal='multiplicative', exponential=FALSE)$mean
-    
-    return(list(#'forecasts'=addi_holder#,
-                'forecasts'=multi_holder
-      
-    ))
+    holder = hw(x$HW_timeseries, h=horizon, seasonal=add_mult, exponential=exponential)$mean
+
+    return(list('forecasts'=holder,'horizon'=horizon,'seasonal'=add_mult,'exponential'=exponential,'original_length'=x$series_features$series_length))
+
   }))
 
   # Source: https://otexts.com/fpp2/holt-winters.html
-  # There are two variations to this method that differ in the nature of the seasonal component. 
-  # The additive method is preferred when the seasonal variations are roughly constant through the series, 
-  # while the multiplicative method is preferred when the seasonal variations are changing proportional to the level of the series. 
-  
-  # With the additive method, the seasonal component is expressed in absolute terms in the scale of the observed series, 
-  # and in the level equation the series is seasonally adjusted by subtracting the seasonal component. 
-  # Within each year, the seasonal component will add up to approximately zero. 
-  # 
-  # With the multiplicative method, the seasonal component is expressed in relative terms (percentages), 
-  # and the series is seasonally adjusted by dividing through by the seasonal component. 
+  # There are two variations to this method that differ in the nature of the seasonal component.
+  # The additive method is preferred when the seasonal variations are roughly constant through the series,
+  # while the multiplicative method is preferred when the seasonal variations are changing proportional to the level of the series.
+
+  # With the additive method, the seasonal component is expressed in absolute terms in the scale of the observed series,
+  # and in the level equation the series is seasonally adjusted by subtracting the seasonal component.
+  # Within each year, the seasonal component will add up to approximately zero.
+  #
+  # With the multiplicative method, the seasonal component is expressed in relative terms (percentages),
+  # and the series is seasonally adjusted by dividing through by the seasonal component.
   # Within each year, the seasonal component will sum up to approximately m.
 
-  
+
   return(fore_holder)
 }
 
 #######################################################################################-
 
 fix_start = function(json_file) {
-  
+
   json_file<-lapply(json_file,function(x) {
     x$series_features$year = strftime(x$start, "%Y")
     x$series_features$month = strftime(x$start, "%m")
-    
-    
+
+
     return(x)
   })
-  
+
   return(json_file)
 }
 
 #######################################################################################-
 
 create_timeseries = function(json_file) {
-  
+
   json_file<-lapply(json_file,function(x) {
     x$HW_timeseries = ts(data = x$target,
                          start = c(x$series_features$year, x$series_features$month),
                          frequency = 12)
-    
-    return(x)
-  })
-  
-  return(json_file)
-}
 
-remove_timeseries = function(json_file) {
-  json_file<-lapply(json_file, function(x) {
-    x$HW_timeseries <- NULL
     return(x)
   })
+
   return(json_file)
 }
 
@@ -313,13 +302,13 @@ sMAPE_calculate<-function(json_file,forecast_object){
                           json_file[[x]]$target[(l+1-h):l]
                           })
         fores<-lapply(forecast_object[[h-1]],function(x) x$forecasts)
-  
+
         ##indexes into targets and fores
         sMAPE<-sapply(1:length(targets),function(ind) (2/(h+1))*sum((abs(targets[[ind]]-fores[[ind]])/(abs(targets[[ind]])+abs(fores[[ind]])))*100))
         return(sMAPE)
-  
+
         fores<-lapply(forecast_object[[h-1]],function(x) x$forecasts)
-  
+
         lapply(forecast_object[[h-1]],function(x) lapply(1:which_series,function(ind) x[[ind]]$sMAPE==sMAPE[ind]))
       })
 
