@@ -293,7 +293,8 @@ write_forecasts<-function(forecasts,name,folder){
 
 sMAPE_calculate<-function(json_file,forecast_object){
   #sMAPE_holder<-c()
-
+h=2:18
+which_series=1:1428
   ##Gets forecasts and originals for horizon passed.
       my_sMAPES<-lapply(horizon,function(h) {
 
@@ -301,15 +302,19 @@ sMAPE_calculate<-function(json_file,forecast_object){
                           l<-length(json_file[[x]]$target)
                           json_file[[x]]$target[(l+1-h):l]
                           })
-        fores<-lapply(forecast_object[[h-1]],function(x) x$forecasts)
 
-        ##indexes into targets and fores
-        sMAPE<-sapply(1:length(targets),function(ind) (2/(h+1))*sum((abs(targets[[ind]]-fores[[ind]])/(abs(targets[[ind]])+abs(fores[[ind]])))*100))
+
+
+        fores <- list()
+
+        # Iterate over the numbers 1 to 10 and extract the forecasts object for each series
+        for (i in which_series) {
+          fores[[i]] <- forecast_object[[h-1]][[i]]$forecasts
+        }
+
+        sMAPE<-sapply(1:length(targets),function(ind) (2/(h))*sum((abs(targets[[ind]]-fores[[ind]])/(abs(targets[[ind]])+abs(fores[[ind]])))*100))
         return(sMAPE)
 
-        fores<-lapply(forecast_object[[h-1]],function(x) x$forecasts)
-
-        lapply(forecast_object[[h-1]],function(x) lapply(1:which_series,function(ind) x[[ind]]$sMAPE==sMAPE[ind]))
       })
 
      return(my_sMAPES)
@@ -357,11 +362,52 @@ sMAPE_summary<-function(sMAPES,h){
 
 summary_all_horizons<-function(sMAPES){
 
-  mins<-sapply(my_sMAPES,function(x) min(x))
-  means<-sapply(my_sMAPES,function(x) mean(x))
-  medians<-sapply(my_sMAPES,function(x) median(x))
-  maxes<-sapply(my_sMAPES,function(x) max(x))
+  mins<-sapply(sMAPES,function(x) min(x))
+  means<-sapply(sMAPES,function(x) mean(x))
+  medians<-sapply(sMAPES,function(x) median(x))
+  maxes<-sapply(sMAPES,function(x) max(x))
   df<-data.frame('Horizon'=horizon,'Min'=mins,'Median'=medians,'Mean'=means,'Max'=maxes)
   print(df)
 
+
 }
+
+#read_in<-lapply(1:length(names_list), function(x) readRDS(paste0(folder_list[x],'/',names_list[x],".RData")))
+#my_sums<-lapply(read_in,function(x) summary_all_horizons(x))
+
+
+#######################################################################################-
+#names_list<-c("HW_ADDI_forecast_1428_sMAPES_")
+#folder_list<-c("HW_Forecasts")
+
+import_multiple_smapes<-function(names_list,folder_list){
+  read_in<-lapply(1:length(names_list), function(x) readRDS(paste0(folder_list[x],'/',names_list[x],".RData")))
+
+  my_sums <- lapply(read_in, function(x) {
+    my_frame <- data.frame(Mean = numeric(), Median = numeric())
+    lapply(x, function(i) {
+      temp <- data.frame(Mean = mean(i), Median = median(i))
+
+      ##Note the <<-, this pushes my_frame to the function import_multiple_smapes environment scope
+
+      my_frame <<- rbind(my_frame, temp)
+
+    })
+    return(my_frame)
+  })
+
+
+#
+#   for (i in seq_along(my_sums)) {
+#     my_sums[[i]]$Method <- names_list[i]
+#   }
+#
+#   merged_df <- do.call(rbind, my_sums)
+  return(my_sums)
+}
+
+
+#######################################################################################-
+#Call other files to maintain consistency
+
+source('LSTM.R')
