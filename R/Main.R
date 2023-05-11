@@ -7,12 +7,12 @@
 ###############
 
   #Can be single number or x:y
-    horizon=2:18
+    horizon=2:3
 
   ##Mainly for testing, this allows you to only use the first 20 series in the object for simplicity
   ##Presently if you want to use the whole series, you will have to change this to 1:1428
   ##Note: for horizon and which_series, this only affects
-    which_series=1:1428
+    which_series=1:5
 
   #####
   ##name of file to save, folder name for model
@@ -20,8 +20,8 @@
   ##Naming convention: <Model>_<Trend_Remover>_<Seasonality_Remover>_forecast<horizons>
 
     #name='HW_ADDI_forecast_1428'
-    name='ARIMA_CochraneOrc_forecast_1428'
-    folder = 'ARIMA_Forecasts'
+    name='MLP_forecast_test_10'
+    folder = 'MLP_Forecasts'
 
 ###############
 ###############

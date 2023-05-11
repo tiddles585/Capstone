@@ -293,8 +293,8 @@ write_forecasts<-function(forecasts,name,folder){
 
 sMAPE_calculate<-function(json_file,forecast_object){
   #sMAPE_holder<-c()
-h=2:18
-which_series=1:1428
+# h=2:18
+# which_series=1:1428
   ##Gets forecasts and originals for horizon passed.
       my_sMAPES<-lapply(horizon,function(h) {
 
