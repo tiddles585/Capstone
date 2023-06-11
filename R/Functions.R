@@ -5,7 +5,8 @@ library(proxy) ## for jaccard similarity
 library(neighbr)
 library(nnfor)
 library(RDCOMClient)
-library(forecast)
+library(forecast) # thetaf()
+library(smooth)   # es(), auto.ssarima(), auto.ces()
 
 #######################################################################################
 
@@ -213,34 +214,61 @@ forecast_arima<-function(json_file,horizon=0){
 }
 
 #######################################################################################-
-# START DUY'S HOLT-WINTER'S
+# START DUY'S STUFF
 #######################################################################################-
 
-forecast_hw = function(json_file, horizon=0,add_mult='additive',exponential=FALSE) {
-
+forecast_es = function(json_file, horizon=0) {
+  
   fore_holder<-invisible(lapply(json_file,function(x){
-    # seasonal='additive' and exponential=FALSE means model="AAA" in ets(), or additive Holt-Winter's
-    # seasonal='multiplicative' and exponential=FALSE means model="MAM" in ets(), or multiplicative Holt-Winter's
-    holder = hw(x$HW_timeseries, h=horizon, seasonal=add_mult, exponential=exponential)$mean
 
-    return(list('forecasts'=holder,'horizon'=horizon,'seasonal'=add_mult,'exponential'=exponential,'original_length'=x$series_features$series_length))
-
+    es_holder = es(x$monthly_timeseries)
+    # ets(y, all defaults) is equivalent to es(y, model="ZXZ")
+    # ets() is the original exponential smoothing state space model by Hyndman et al.(2008), consisting of 24 models
+            # 1st letter (A, M) = error, 2nd letter (N, A, M, D) = trend, 3rd letter (N, A, M) = seasonal
+    # es() is the regularly updated extension to it, consisting of 30 models that can all be regulated via...
+        # only all additive = XXX, no multiplicative trend = ZXZ, no additive components (slow moving products) = YYY, ...
+        # forecast combination of AIC weights for all models = CCC, same but all non-seasonal models = CCN
+            # 1st letter (A, M) = error, 2nd and sometimes 3rd letter (N, A, Ad, M, Md) = trend, 3rd letter (N, A, M) = seasonal
+    model = es_holder$model
+    holder = forecast(es_holder, h=horizon)$forecast
+    
+    return(list('forecasts'=holder, 'model'=model, 'horizon'=horizon, 'original_length'=x$series_features$series_length))
+                                   # model="NNN" = SES (simple exponential smoothing)
+                                   # model="ANN" = SES with additive error
+                                   # model="AAA" = additive Holt-Winter's
+                                   # model="MAM" = multiplicative Holt-Winter's
+    
   }))
+  
+  return(fore_holder)
+}
 
-  # Source: https://otexts.com/fpp2/holt-winters.html
-  # There are two variations to this method that differ in the nature of the seasonal component.
-  # The additive method is preferred when the seasonal variations are roughly constant through the series,
-  # while the multiplicative method is preferred when the seasonal variations are changing proportional to the level of the series.
+forecast_ces = function(json_file, horizon=0) {
+  
+  fore_holder<-invisible(lapply(json_file,function(x){
+    
+    ces_holder = ces(x$monthly_timeseries)
+    # ...
+    holder = forecast(ces_holder, h=horizon)$forecast
+    
+    return(list('forecasts'=holder, 'horizon'=horizon, 'original_length'=x$series_features$series_length))
+    
+  }))
+  
+  return(fore_holder)
+}
 
-  # With the additive method, the seasonal component is expressed in absolute terms in the scale of the observed series,
-  # and in the level equation the series is seasonally adjusted by subtracting the seasonal component.
-  # Within each year, the seasonal component will add up to approximately zero.
-  #
-  # With the multiplicative method, the seasonal component is expressed in relative terms (percentages),
-  # and the series is seasonally adjusted by dividing through by the seasonal component.
-  # Within each year, the seasonal component will sum up to approximately m.
-
-
+forecast_theta = function(json_file, horizon=0) {
+  
+  fore_holder<-invisible(lapply(json_file,function(x){
+    
+    holder = thetaf(x$monthly_timeseries, horizon)$mean
+    # ...
+    
+    return(list('forecasts'=holder, 'horizon'=horizon, 'original_length'=x$series_features$series_length))
+    
+  }))
+  
   return(fore_holder)
 }
 
@@ -261,10 +289,10 @@ fix_start = function(json_file) {
 
 #######################################################################################-
 
-create_timeseries = function(json_file) {
+create_monthly_timeseries = function(json_file) {
 
   json_file<-lapply(json_file,function(x) {
-    x$HW_timeseries = ts(data = x$target,
+    x$monthly_timeseries = ts(data = x$target,
                          start = c(x$series_features$year, x$series_features$month),
                          frequency = 12)
 
@@ -275,7 +303,7 @@ create_timeseries = function(json_file) {
 }
 
 #######################################################################################-
-# END DUY'S HOLT-WINTER'S
+# END DUY'S STUFF
 #######################################################################################-
 
 #######################################################################################-
