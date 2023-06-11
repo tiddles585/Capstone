@@ -19,9 +19,14 @@
   ##Folder can be 'ARIMA_Forecasts','HW_Forecasts, or 'MLP_Forecasts' at the moment
   ##Naming convention: <Model>_<Trend_Remover>_<Seasonality_Remover>_forecast<horizons>
 
+
     #name='HW_ADDI_forecast_1428'
     name='MLP_forecast_combined'
     folder = 'MLP_Forecasts'
+
+    #name='ARIMA_CochraneOrc_forecast_1428'
+    #folder = 'ARIMA_Forecasts'
+
 
 ###############
 ###############
@@ -51,11 +56,23 @@ rm(list=ls())
     source('Cochrane_Orcutt.R')
     source('ARIMA.R')
 
-#Holts Winter
+#ES
 
     source('Functions.R')
     source('Preprocess.R')
-    source('HW.R')
+    source('ES.R')
+
+#CES
+
+    source('Functions.R')
+    source('Preprocess.R')
+    source('CES.R')
+
+#Theta
+
+    source('Functions.R')
+    source('Preprocess.R')
+    source('Theta.R')
 
 source('sMAPE.R')
 ##write sMAPES to file
