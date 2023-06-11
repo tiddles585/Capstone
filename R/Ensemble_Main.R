@@ -22,9 +22,11 @@ ARIMA_FORECASTS<-readRDS(paste0('ARIMA_Forecasts','/',"ARIMA_CochraneOrc_forecas
 
           ##THESE ARE CHANGEABLE AND MUST LINE UP IE if ARIMA_Folder is first in list_of_folders, then an ARIMA Model must be first in List_of_ensembles
 
-            List_of_Folders<-c(ARIMA_Folder,HW_Folder,HW_Folder)
-            List_of_Ensembles<-c("ARIMA_CochraneOrc_forecast_1428",'HW_ADDI_forecast_1428','HW_MULTI_forecast_1428')
+            List_of_Folders<-c(ARIMA_Folder,HW_Folder,HW_Folder,MLP_Folder)
+            List_of_Ensembles<-c("ARIMA_CochraneOrc_forecast_1428",'HW_ADDI_forecast_1428','HW_MULTI_forecast_1428',"MLP_forecast_combined")
 
+            List_of_Folders<-c(HW_Folder,MLP_Folder)
+            List_of_Ensembles<-c('HW_ADDI_forecast_1428',"MLP_forecast_combined")
   ##RUNNERS
 
     ##Create ensembles!
@@ -33,18 +35,21 @@ ARIMA_FORECASTS<-readRDS(paste0('ARIMA_Forecasts','/',"ARIMA_CochraneOrc_forecas
       source('Preprocess.R')
             my_ensemble_mean<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type = 'mean')
             my_ensemble_median<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type='median')
-            my_ensemble_smape<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type='smape')
+            #my_ensemble_smape<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type='smape')
 
     ##Get sMAPES
 
 
             my_sMAPES_mean<-sMAPE_calculate(json_file,my_ensemble_mean)
             my_sMAPES_median<-sMAPE_calculate(json_file,my_ensemble_median)
-            my_sMAPES_smape<-sMAPE_calculate(json_file,my_ensemble_smape)
+           # my_sMAPES_smape<-sMAPE_calculate(json_file,my_ensemble_smape)
 
             summary_all_horizons(my_sMAPES_mean)
             summary_all_horizons(my_sMAPES_median)
             summary_all_horizons(my_sMAPES_smape)
+
+    ##WRITE
+            write_sMAPES(my_sMAPES_mean,'sMAPES','HWADD_MLP_mean')
 
 
 

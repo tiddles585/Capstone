@@ -120,7 +120,7 @@ remove_trend_differencing<-function(json_file){
 #######################################################################################-
 
 
-
+##Code borrowed from aic5 function in tswge package
 
 my_aic<-function (x, p = 0:5, q = 0:2, type = "aic")
 {
@@ -377,11 +377,11 @@ summary_all_horizons<-function(sMAPES){
 
 
 #######################################################################################-
-#names_list<-c("HW_ADDI_forecast_1428_sMAPES_")
-#folder_list<-c("HW_Forecasts")
+names_list<-c("ARIMA_sMAPES_","HW_ADDI_sMAPES_","HW_MULTI_sMAPES_","MLP_sMAPES_")
+folder_list<-c("sMAPES")
 
 import_multiple_smapes<-function(names_list,folder_list){
-  read_in<-lapply(1:length(names_list), function(x) readRDS(paste0(folder_list[x],'/',names_list[x],".RData")))
+  read_in<-lapply(1:length(names_list), function(x) readRDS(paste0(folder_list,'/',names_list[x],".RData")))
 
   my_sums <- lapply(read_in, function(x) {
     my_frame <- data.frame(Mean = numeric(), Median = numeric())
@@ -406,6 +406,7 @@ import_multiple_smapes<-function(names_list,folder_list){
   return(my_sums)
 }
 
+import_multiple_smapes(names_list,folder_list)
 
 #######################################################################################-
 #Call other files to maintain consistency
