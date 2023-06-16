@@ -34,20 +34,37 @@
 ###############
 ###############
 ##MLP
-rm(list=ls())
-##LSTM
 
+##LSTM
+    ARIMA_Forecasts<-lapply(horizon,function(x) forecast_arima(json_file[which_series],horizon=x))
     source('Functions.R')
     source('Preprocess.R')
 
-    run_LSTM(json_file[[1]]$target,
-             horizon=5,
-             n_steps=10,
-             cells=500,
-             learning_rate=.1,
-             epochs=100,
-             patience=3,
-             min_delta=1)
+start_time=Sys.time()
+error_log=c()
+   LSTM_Forecasts <- lapply(1:1428, function(x) {
+     if(x%%2==0){
+       message(paste("I'm at",x))
+     }
+     tryCatch({
+     return(run_LSTM(json_file[[x]]$target,
+              horizon = 5,
+              n_steps = 10,
+              cells = 500,
+              learning_rate = 0.1,
+              epochs = 100,
+              patience = 3,
+              min_delta = 1))
+     }, error=function(e){
+       error_log<-c(error_log, x)
+     })
+   })
+end_time=Sys.time()
+end_time-start_time
+
+
+#YOU NEED TO CHANGE THE NAME OF THE FORECAST TO MATCH THE HORIZON.
+write_forecasts(LSTM_Forecasts,"LSTM_Forecasts_5","LSTM_Forecasts")
 
 ##ARIMA
 

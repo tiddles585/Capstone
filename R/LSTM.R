@@ -74,20 +74,23 @@ run_LSTM<-function(ts,horizon,n_steps,cells,learning_rate,epochs,patience,min_de
     model %>% fit(
       x_train, y_train,
       epochs = epochs,
-      verbose = 1,
+      verbose = 0,
+
       callbacks = list(callback_early_stopping(monitor = 'loss',patience = patience,min_delta = min_delta))
     )
 
   #predict
-    y_pred <- model %>% predict(x_test)
+     preds<-model %>% predict(x_test)
+     return(list('forecasts'=preds))
 
   #print results
 
-    cat("####ACTUAL####\n" )
-    cat(y_test)
-    cat("\n\n")
-    cat("####PREDICTED####\n")
-    cat(y_pred)
+    # cat("####ACTUAL####\n" )
+    # cat(y_test)
+    # cat("\n\n")
+    # cat("####PREDICTED####\n")
+    # cat(y_pred)
+    # return(model)
 
 }
 
