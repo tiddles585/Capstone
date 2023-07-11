@@ -8,6 +8,7 @@ library(RDCOMClient)
 library(forecast) # thetaf()
 library(smooth)   # es(), auto.ssarima(), auto.ces()
 library(scales)
+library(orcutt)
 
 #######################################################################################
 
