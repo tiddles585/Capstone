@@ -7,6 +7,7 @@ library(nnfor)
 library(RDCOMClient)
 library(forecast) # thetaf()
 library(smooth)   # es(), auto.ssarima(), auto.ces()
+library(scales)
 
 #######################################################################################
 
@@ -48,7 +49,9 @@ series_features<-function(json_file){
     x$series_features<-list('p'=0,'q'=0,'d'=0,'s'=0,
                             'series_length'=length(x$target),
                             'phi'=0,'theta'=0,
-                            'year'=0,'month'=0)
+                            'year'=0,'month'=0,
+                            'min'=min(x$target),
+                            'max'=max(x$target))
     return(x)})
   
   
@@ -116,6 +119,37 @@ remove_trend_differencing<-function(json_file){
   })
   return(json_file)
 }
+
+
+#######################################################################################-
+
+
+scale<-function(json_file){
+  
+  json_file<-lapply(json_file,function(x) {
+    
+    x$Transformed=rescale(x$Transformed, 
+                          to=c(-1,1))#,
+                          #range=c(min(x$Transformed), max(x$Transformed)))
+    
+    
+    return(x)
+    
+  })
+  return(json_file)
+}
+
+
+#######################################################################################-
+
+
+# invert_scale<-function(json_file){
+#   
+#   json_file<-lapply(json_file,function(x) {
+#     
+#     x$Transformed=rescale
+#   })
+# }
 
 
 #######################################################################################-
@@ -434,7 +468,7 @@ import_multiple_smapes<-function(names_list,folder_list){
   return(my_sums)
 }
 
-import_multiple_smapes(names_list,folder_list)
+#import_multiple_smapes(names_list,folder_list)
 
 #######################################################################################-
 #Call other files to maintain consistency

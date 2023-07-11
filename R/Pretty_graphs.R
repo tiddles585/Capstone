@@ -7,7 +7,7 @@ library(flextable)
 
 all_metrics <- data.frame(Name = character(), Horizon = integer(), Type = character(), Value = numeric())
 
-my_method <- c("HW Additive", "HW Mult.", "ARIMA")
+my_method <- c("CES", "Theta", "ARIMA")
 sapply(1:3, function(x) {
   temp <- data.frame(Mean = my_sMAPES[[x]]$Mean, Median = my_sMAPES[[x]]$Median, Horizon = 2:18)
   temp_long <- gather(temp, key = "Type", value = "Value", Mean, Median)

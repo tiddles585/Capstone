@@ -20,7 +20,7 @@ smape_loss <- function(y_true, y_pred) {
 
 #######################################################################################-
 
-run_LSTM<-function(ts,horizon,n_steps,cells,learning_rate,epochs,patience,min_delta){
+run_LSTM<-function(ts,min,max,horizon,n_steps,cells,learning_rate,epochs,patience,min_delta){
   #ts=series, #horizon , n_steps=# steps to remember ,cells=units ,learning_rate, epochs,
   #patience=callback patience, min_delta,callback min change
   
@@ -81,6 +81,12 @@ run_LSTM<-function(ts,horizon,n_steps,cells,learning_rate,epochs,patience,min_de
   
   #predict
   preds<-model %>% predict(x_test)
+  
+  # invert scale
+  preds<-rescale(preds,
+                 from=c(-1,1))#,
+                 #to=c(min,max))
+  
   return(list('forecasts'=preds))
   
   #print results
