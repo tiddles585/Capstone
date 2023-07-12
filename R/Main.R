@@ -21,11 +21,11 @@
 
 
     #name='HW_ADDI_forecast_1428'
-    name='Theta_forecast_1428'
-    folder = 'Theta_Forecasts'
+    #name='Theta_forecast_1428'
+    #folder = 'Theta_Forecasts'
 
-    #name='ARIMA_CochraneOrc_forecast_1428'
-    #folder = 'ARIMA_Forecasts'
+    name='ARIMA_CochraneOrc_forecast_1428'
+    folder = 'ARIMA_Forecasts'
 
 
 ###############
