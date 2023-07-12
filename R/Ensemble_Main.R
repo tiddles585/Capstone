@@ -12,9 +12,11 @@ get_all_directory_forecasts()
     #Names of Folders
 
             ARIMA_Folder="ARIMA_Forecasts"
-            HW_Folder='HW_Forecasts'
-            LSTM_Folder="LSTM_Forecasts"
+            ES_Folder='ES_Forecasts'
+            CES_Folder='CES_Forecasts'
+            Theta_Folder='Theta_Forecasts'
             MLP_Folder='MLP_Forecasts'
+            LSTM_Folder="LSTM_Forecasts"
 
             #These are defined in Main as well, (crappy programming choice)
             horizon=2:18
@@ -22,8 +24,15 @@ get_all_directory_forecasts()
 
           ##THESE ARE CHANGEABLE AND MUST LINE UP IE if ARIMA_Folder is first in list_of_folders, then an ARIMA Model must be first in List_of_ensembles
 
-            List_of_Folders<-c(ARIMA_Folder,HW_Folder,HW_Folder)
-            List_of_Ensembles<-c("ARIMA_CochraneOrc_forecast_1428",'HW_ADDI_forecast_1428','HW_MULTI_forecast_1428')
+            List_of_Folders<-c(ARIMA_Folder,ES_Folder,
+                               #CES_Folder,Theta_Folder,
+                               MLP_Folder)
+            List_of_Ensembles<-c("ARIMA_CochraneOrc_forecast_1428",
+                                 #"ARIMA_All_difference_forecast_1428",
+                                 'ES_forecast_1428',
+                                 #'CES_forecast_1428','Theta_forecast_1428',
+                                 'MLP_forecast_combined'
+                                 )
 
   ##RUNNERS
 
@@ -31,20 +40,26 @@ get_all_directory_forecasts()
 
       source('Functions.R')
       source('Preprocess.R')
+              
             my_ensemble_mean<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type = 'mean')
             my_ensemble_median<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type='median')
-            my_ensemble_smape<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type='smape')
+            #my_ensemble_smape<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type='smape')
 
     ##Get sMAPES
 
 
             my_sMAPES_mean<-sMAPE_calculate(json_file,my_ensemble_mean)
             my_sMAPES_median<-sMAPE_calculate(json_file,my_ensemble_median)
-            my_sMAPES_smape<-sMAPE_calculate(json_file,my_ensemble_smape)
+            #my_sMAPES_smape<-sMAPE_calculate(json_file,my_ensemble_smape)
+            
+            name='ARIMA_ES_MLP_mean'
+            write_sMAPES(my_sMAPES_mean,'sMAPES',name)
+            name='ARIMA_ES_MLP_median'
+            write_sMAPES(my_sMAPES_median,'sMAPES',name)
 
             summary_all_horizons(my_sMAPES_mean)
             summary_all_horizons(my_sMAPES_median)
-            summary_all_horizons(my_sMAPES_smape)
+            #summary_all_horizons(my_sMAPES_smape)
 
 
 
@@ -61,7 +76,7 @@ get_all_directory_forecasts()
 
 
     get_ENSEMBLE<-function(List_of_Folders,List_of_Ensembles,ensemble_type='mean'){
-
+                
           ##CREATE Ensemble Environment
 
                  ##CREATE TEMP LISTS OF EACH FORECAST BASED ON HOW MANY YOU WANNA ENSEMBLE
@@ -160,7 +175,7 @@ get_all_directory_forecasts()
                ensemble_sum[[j]][[k]]$forecasts<-lamdba_forecast_ens(forecast_sum)
              }
            }
-
+      
       return(ensemble_sum)
     }
 

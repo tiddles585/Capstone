@@ -9,8 +9,11 @@ library(flextable)
 names_list<-c("ARIMA_sMAPES_",'ES_forecast_1428_sMAPES_','CES_forecast_1428_sMAPES_','Theta_forecast_1428_sMAPES_',
               "MLP_sMAPES_",
               "ARIMA_ALLHW_MLP_mean_sMAPES_",'ARIMA_ALLHW_MLP_median_sMAPES_',
-              'ARIMA_MLP_mean_sMAPES_','HWADD_MLP_mean_sMAPES_',
-              'HWADDnMult_MLP_ARIMA_CES_Theta_mean_sMAPES_')
+              #"ARIMA_ES_MLP_mean_sMAPES_",'ARIMA_ES_MLP_median_sMAPES_',
+              "ARIMAAll_ES_MLP_mean_sMAPES_",'ARIMAAll_ES_MLP_median_sMAPES_',
+              #'ARIMA_MLP_mean_sMAPES_','HWADD_MLP_mean_sMAPES_',
+              #'HWADDnMult_MLP_ARIMA_CES_Theta_mean_sMAPES_',
+              'ARIMA_ES_CES_Theta_mean_sMAPES_','ARIMA_ES_CES_Theta_median_sMAPES_')
 folder_list<-c("sMAPES")
 
 my_sMAPES<-import_multiple_smapes(names_list,folder_list)
@@ -29,13 +32,18 @@ all_metrics <- data.frame(Name = character(), Horizon = integer(), Type = charac
 
 my_method <- c("ARIMA","ETS",'CES',"Theta",
                "MLP",
-               'ENS 1','ENS 2','ENS 3','ENS 4','ENS 5')
+               'ENS1','ENS2',
+               #'ENS1A','ENS2A',
+               'ENS1B','ENS2B',
+               #'ENS3','ENS4',
+               #'ENS5',
+               'ENS6','ENS7')
 #ENS 1 = All HW, MLP, ARIMA mean
 #ENS 2 = All HW, MLP, ARIMA median
 #ENS 3 = ARIMA MLP mean
 #ENS 4 = HW_Add MLP mean
 #ENS 5 = HW Add/multi, ARIMA, MLP, CES,Theta
-#
+#ENS 6 = ARIMA, ES, CES, Theta
 sapply(1:length(my_method), function(x) {
   temp <- data.frame(Mean = my_sMAPES[[x]]$Mean, Median = my_sMAPES[[x]]$Median, Horizon = 2:18)
   temp_long <- gather(temp, key = "Type", value = "Value", Mean, Median)

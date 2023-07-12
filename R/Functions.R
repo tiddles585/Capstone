@@ -256,10 +256,11 @@ forecast_es = function(json_file, horizon=0) {
   
   fore_holder<-invisible(lapply(json_file,function(x){
     
-    es_holder = es(x$monthly_timeseries)
+    es_holder = es(x$monthly_timeseries)#, model="ZXZ")
     # ets(y, all defaults) is equivalent to es(y, model="ZXZ")
     # ets() is the original exponential smoothing state space model by Hyndman et al.(2008), consisting of 24 models
     # 1st letter (A, M) = error, 2nd letter (N, A, M, D) = trend, 3rd letter (N, A, M) = seasonal
+    
     # es() is the regularly updated extension to it, consisting of 30 models that can all be regulated via...
     # only all additive = XXX, no multiplicative trend = ZXZ, no additive components (slow moving products) = YYY, ...
     # forecast combination of AIC weights for all models = CCC, same but all non-seasonal models = CCN
@@ -282,7 +283,7 @@ forecast_ces = function(json_file, horizon=0) {
   
   fore_holder<-invisible(lapply(json_file,function(x){
     
-    ces_holder = ces(x$monthly_timeseries)
+    ces_holder = auto.ces(x$monthly_timeseries)
     # ...
     holder = forecast(ces_holder, h=horizon)$forecast
     

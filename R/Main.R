@@ -21,11 +21,11 @@
 
 
     #name='HW_ADDI_forecast_1428'
-    #name='Theta_forecast_1428'
-    #folder = 'Theta_Forecasts'
+    name='CES_forecast_1428'
+    folder = 'CES_Forecasts'
 
-    name='ARIMA_CochraneOrc_forecast_1428'
-    folder = 'ARIMA_Forecasts'
+    #name='ARIMA_CochraneOrc_forecast_1428'
+    #folder = 'ARIMA_Forecasts'
 
 
 ###############
@@ -71,25 +71,34 @@ write_forecasts(LSTM_Forecasts,"LSTM_Forecasts_7","LSTM_Forecasts")
     source('Functions.R')
     source('Preprocess.R')
     source('Cochrane_Orcutt.R')
+      start <- Sys.time()
     source('ARIMA.R')
+      print( Sys.time() - start )
+    # TRY WITH auto.ssarima() from smooth
 
 #ES
 
     source('Functions.R')
     source('Preprocess.R')
+      start <- Sys.time()
     source('ES.R')
+      print( Sys.time() - start )
 
 #CES
 
     source('Functions.R')
     source('Preprocess.R')
+      start <- Sys.time()
     source('CES.R')
+      print( Sys.time() - start )
 
 #Theta
 
     source('Functions.R')
     source('Preprocess.R')
+      start <- Sys.time()
     source('Theta.R')
+      print( Sys.time() - start )
 
 source('sMAPE.R')
 ##write sMAPES to file
