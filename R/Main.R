@@ -20,9 +20,9 @@
   ##Naming convention: <Model>_<Trend_Remover>_<Seasonality_Remover>_forecast<horizons>
 
 
-    #name='HW_ADDI_forecast_1428'
-    name='DeepAR_forecast'
-    folder = 'DeepAR_Forecasts'
+    #name='LSTM_Forecasts'
+    name='ARIMA_All_difference_forecast_1428'
+    folder = "ARIMA_Forecasts"
 
     #name='ARIMA_CochraneOrc_forecast_1428'
     #folder = 'ARIMA_Forecasts'
@@ -90,6 +90,7 @@ write_forecasts(LSTM_Forecasts,"LSTM_Forecasts_5","LSTM_Forecasts")
     source('Functions.R')
     source('Preprocess.R')
     source('Theta.R')
+
 
 source('sMAPE.R')
 ##write sMAPES to file

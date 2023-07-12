@@ -6,6 +6,8 @@ library(tableHTML)
 library(flextable)
 
 ##import sMAPES and combine
+names_list<-c("ARIMA_All_difference_forecast_1428_sMAPES_",,"HW_ADDI_sMAPES_","HW_MULTI_sMAPES_",'Theta_forecast_1428_sMAPES_','CES_forecast_1428_sMAPES_',"ES_forecast_1428_sMAPES_",
+              "MLP_sMAPES_","LSTM_forecast_sMAPES_","DeepAR_forecast_sMAPES_")
 names_list<-c("ARIMA_sMAPES_","HW_ADDI_sMAPES_","HW_MULTI_sMAPES_",'Theta_forecast_1428_sMAPES_','CES_forecast_1428_sMAPES_',
               "MLP_sMAPES_","ARIMA_ALLHW_MLP_mean_sMAPES_",'ARIMA_ALLHW_MLP_median_sMAPES_','ARIMA_MLP_mean_sMAPES_','HWADD_MLP_mean_sMAPES_',
               'HWADDnMult_MLP_ARIMA_CES_Theta_mean_sMAPES_')
@@ -25,8 +27,8 @@ my_sMAPES<-import_multiple_smapes(names_list,folder_list)
 
 ##This formats everything for the table..This is for the MEAN
 all_metrics <- data.frame(Name = character(), Horizon = integer(), Type = character(), Value = numeric())
-
-my_method <- c("ARIMA", "HW Mult", "HW Add","Theta",'CES',"MLP",'ENS 1','ENS 2','ENS 3','ENS 4','ENS 5')
+my_method <- c("ARIMA", "HW Mult", "HW Add","Theta",'CES',"ES","MLP","LSTM","DeepAR")
+my_method <- c("ARIMA", "HW Mult", "HW Add","Theta",'CES',"ES","MLP",'ENS 1','ENS 2','ENS 3','ENS 4','ENS 5')
 #ENS 1 = All HW, MLP, ARIMA mean
 #ENS 2 = All HW, MLP, ARIMA median
 #ENS 3 = ARIMA MLP mean
@@ -58,7 +60,7 @@ temp_mean<-temp_mean[,c(18,1:17)]
 min_vals <- apply(temp_mean[,-1], 2, min)
 
 
-tableHTML(temp_mean,rownames = FALSE,widths = c(200,rep(100,17)),collapse = 'separate',spacing = '3px',
+table<-tableHTML(temp_mean,rownames = FALSE,widths = c(200,rep(100,17)),collapse = 'separate',spacing = '3px',
           border = 0 ,second_headers=list(18,c('Mean sMAPE Values on Horizons 2-18')))%>%
   add_css_conditional_column(conditional = 'min',
                              same_scale=FALSE,
@@ -70,6 +72,7 @@ tableHTML(temp_mean,rownames = FALSE,widths = c(200,rep(100,17)),collapse = 'sep
   #add_css_caption(css =list(c('border-collapse','border-spacing'),c('separate','15px')))%>%
   add_css_header(css = list( c('height','border-bottom','background-color','color','font-size'), c('10px','5px solid steelblue','steelblue','white','30px')),headers = 1:19)
 
+tableHTML::write_tableHTML(table,file = "C:\\Users\\tavin\\OneDrive\\Desktop\\Capstone_git_main\\Capstone\\R\\my_table.html")
 
 
 render_tableHTML(table)
@@ -142,14 +145,15 @@ all_metrics[all_metrics$Type=='Mean',]%>% ggplot(aes(x=Horizon,y=Value,color=Nam
 
 
 ### Get domain of each forecast
-
+library(ggplot2)
+library(ggthemes)
     name='CES_forecast_1428'
     folder = 'CES_Forecasts'
     Monthly_Domains <- read.csv("C:/Users/tavin/OneDrive/Desktop/Capstone_git_main/Capstone/R/Monthly_Domains.csv")
 
     domain_array<-rep(Monthly_Domains$Category,17)
     domain_array<-gsub(" ","",domain_array)
-   domain_array<-paste(domain_array,"CES")
+   domain_array<-paste(domain_array,"LSTM")
 
 
     my_forecasts<-read_forecasts(folder = folder,name = name)
@@ -160,19 +164,19 @@ all_metrics[all_metrics$Type=='Mean',]%>% ggplot(aes(x=Horizon,y=Value,color=Nam
     unlist_smapes<-data.frame(unlist(my_sMAPES))
 
     #domain_forecasts
-    domain_forecasts_ces<-cbind(unlist_smapes,domain_array)
+    domain_forecasts<-cbind(unlist_smapes,domain_array)
 
     repeats <- c()
 
     for (i in 2:18) {
       repeats <- c(repeats, rep(i, 1428))
     }
+    domain_forecasts$Horizon=repeats
+    #domain_forecasts_ces$Horizon=repeats
 
-    domain_forecasts_ces$Horizon=repeats
-
-    names(domain_forecasts_ces)<-c("sMAPES","Domain","Horizon")
-    names(domain_forecasts)
-  domain_forecasts<-rbind(domain_forecasts_mlp,domain_forecasts_ces)
+    #names(domain_forecasts_ces)<-c("sMAPES","Domain","Horizon")
+    names(domain_forecasts)<-c("sMAPES","Domain","Horizon")
+  #domain_forecasts<-rbind(domain_forecasts_mlp,domain_forecasts_ces)
 
     mean_data <- domain_forecasts %>%
       group_by(Domain, Horizon) %>%
