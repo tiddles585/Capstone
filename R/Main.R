@@ -1,5 +1,5 @@
 #Clears Environment
-    #rm(list=ls())
+   # rm(list=ls())
 ###############
 ###############
 ##Global Variables
@@ -21,8 +21,8 @@
 
 
     #name='HW_ADDI_forecast_1428'
-    name='MLP_forecast_combined'
-    folder = 'MLP_Forecasts'
+    name='DeepAR_forecast'
+    folder = 'DeepAR_Forecasts'
 
     #name='ARIMA_CochraneOrc_forecast_1428'
     #folder = 'ARIMA_Forecasts'
