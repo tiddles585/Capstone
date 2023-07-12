@@ -16,15 +16,71 @@ ARIMA_FORECASTS<-readRDS(paste0('ARIMA_Forecasts','/',"ARIMA_CochraneOrc_forecas
             LSTM_Folder="LSTM_Forecasts"
             MLP_Folder='MLP_Forecasts'
             CES_Folder='CES_Forecasts'
+            ES_Folder='ES_Forecasts'
             Theta_Folder='Theta_Forecasts'
+            DeepAR_Folder='DeepAR_Forecasts'
             #These are defined in Main as well, (crappy programming choice)
+
+            ##These are the combinations of stat methods which will be randomly selected later:
+
+            Stat_Folders<-c(ARIMA_Folder,HW_Folder,HW_Folder,ARIMA_Folder,CES_Folder,Theta_Folder,ES_Folder)
+            Stat_Forecasts<-c("ARIMA_CochraneOrc_forecast_1428",'HW_ADDI_forecast_1428',
+                              'HW_MULTI_forecast_1428','ARIMA_All_difference_forecast_1428',
+                              'CES_forecast_1428','Theta_forecast_1428','ES_forecast_1428')
+
+
+            DL_Folders<-c(MLP_Folder,DeepAR_Folder)
+            DL_Forecasts<-c('MLP_forecast_combined','DeepAR_forecast')
+
+
+
+            ##Creates all the different combinations of lists
+
+            Num_ensembles=10
+
+                stat_combos<-get_all_inx(up_to=length(Stat_Folders),how_many = Num_ensembles,replace_sample = FALSE)
+                DL_combos<-get_all_inx(up_to=length(DL_Folders),min_combo = 1,how_many=Num_ensembles,replace_sample=TRUE)
+                stat_index<-sapply(sample(1:length(stat_combos),size = Num_ensembles,replace=TRUE), function(x) x)
+                DL_index<-sapply(sample(1:length(DL_combos),size = Num_ensembles,replace=TRUE), function(x) x)
+
+                DL_final_combos<-sapply(DL_index,function(x) unlist(DL_combos[[x]]))
+                Stat_final_combos<-sapply(stat_index,function(x) unlist(stat_combos[[x]]))
+
+                List_of_List_of_DL_Folders<-sapply(DL_final_combos,function(x) DL_Folders[x])
+                List_of_List_of_stat_Folders<-sapply(Stat_final_combos,function(x) Stat_Folders[x])
+
+                List_of_List_of_DL_Fores<-sapply(DL_final_combos,function(x) DL_Forecasts[x])
+                List_of_List_of_stat_Fores<-sapply(Stat_final_combos,function(x) Stat_Forecasts[x])
+
+                Final_Folder_Lists<-sapply(1:Num_ensembles,function(x) c(List_of_List_of_DL_Folders[[x]],List_of_List_of_stat_Folders[[x]]))
+                Final_Forecasts_Lists<-sapply(1:Num_ensembles,function(x) c(List_of_List_of_DL_Fores[[x]],List_of_List_of_stat_Fores[[x]]))
+
+
+            ##
+
             horizon=2:18
             which_series=1:1428
 
           ##THESE ARE CHANGEABLE AND MUST LINE UP IE if ARIMA_Folder is first in list_of_folders, then an ARIMA Model must be first in List_of_ensembles
 
-            List_of_Folders<-c(ARIMA_Folder,HW_Folder,HW_Folder,MLP_Folder,CES_Folder,Theta_Folder)
-            List_of_Ensembles<-c("ARIMA_CochraneOrc_forecast_1428",'HW_ADDI_forecast_1428','HW_MULTI_forecast_1428',"MLP_forecast_combined",'CES_forecast_1428','Theta_forecast_1428')
+            source('Functions.R')
+            source('Preprocess.R')
+
+            List_of_Folders<- Final_Folder_Lists[[10]]
+            List_of_Ensembles<-Final_Forecasts_Lists[[10]]
+
+            List_of_Folders<-c(ARIMA_Folder,HW_Folder,HW_Folder,ARIMA_Folder,CES_Folder,Theta_Folder,ES_Folder)
+            List_of_Ensembles<-c("ARIMA_CochraneOrc_forecast_1428",'HW_ADDI_forecast_1428',
+                              'HW_MULTI_forecast_1428','ARIMA_All_difference_forecast_1428',
+                              'CES_forecast_1428','Theta_forecast_1428','ES_forecast_1428')
+start=Sys.time()
+for(x in 1:10){
+
+
+            List_of_Folders<-Final_Folder_Lists[[x]]
+            List_of_Ensembles<-Final_Forecasts_Lists[[x]]
+
+
 
             # List_of_Folders<-c(HW_Folder,MLP_Folder)
             # List_of_Ensembles<-c('HW_ADDI_forecast_1428',"MLP_forecast_combined")
@@ -32,8 +88,7 @@ ARIMA_FORECASTS<-readRDS(paste0('ARIMA_Forecasts','/',"ARIMA_CochraneOrc_forecas
 
     ##Create ensembles!
 
-      source('Functions.R')
-      source('Preprocess.R')
+
             my_ensemble_mean<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type = 'mean')
             my_ensemble_median<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type='median')
             #my_ensemble_smape<-get_ENSEMBLE(List_of_Folders,List_of_Ensembles,ensemble_type='smape')
@@ -47,11 +102,15 @@ ARIMA_FORECASTS<-readRDS(paste0('ARIMA_Forecasts','/',"ARIMA_CochraneOrc_forecas
 
             summary_all_horizons(my_sMAPES_mean)
             summary_all_horizons(my_sMAPES_median)
-            summary_all_horizons(my_sMAPES_smape)
+            #summary_all_horizons(my_sMAPES_smape)
+
+            write_sMAPES(my_sMAPES_mean,'sMAPES',paste0('Ensemble_',x))
+
+}
 
     ##WRITE
             write_sMAPES(my_sMAPES_mean,'sMAPES','HWADDnMult_MLP_ARIMA_CES_Theta_mean')
-
+Sys.time()-start
 
 
 
@@ -61,6 +120,24 @@ ARIMA_FORECASTS<-readRDS(paste0('ARIMA_Forecasts','/',"ARIMA_CochraneOrc_forecas
 #######################################################################################-
 ##Functions
 #######################################################################################-
+  #Create indexes of all possible combinations
+
+            get_all_inx<-function(up_to=7,min_combo=2,how_many=10,replace_sample=FALSE){
+              numbers <- up_to
+
+              all_combinations <- list()
+
+
+              for (length in min_combo:numbers) {
+                combinations <- combn(numbers, length)
+                num_combinations <- ncol(combinations)
+                for (i in 1:num_combinations) {
+                  all_combinations <- c(all_combinations, list(combinations[, i]))
+                }
+              }
+              return(all_combinations)
+
+            }
 
 
   #######################################################################################-
