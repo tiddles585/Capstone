@@ -5,34 +5,55 @@ library(tidyr)
 library(tableHTML)
 library(flextable)
 
-##import sMAPES and combine
-names_list<-c("ARIMA_sMAPES_","HW_ADDI_sMAPES_","HW_MULTI_sMAPES_",'Theta_forecast_1428_sMAPES_','CES_forecast_1428_sMAPES_',
-              "MLP_sMAPES_","ARIMA_ALLHW_MLP_mean_sMAPES_",'ARIMA_ALLHW_MLP_median_sMAPES_','ARIMA_MLP_mean_sMAPES_','HWADD_MLP_mean_sMAPES_',
-              'HWADDnMult_MLP_ARIMA_CES_Theta_mean_sMAPES_')
-folder_list<-c("sMAPES")
 
-my_sMAPES<-import_multiple_smapes(names_list,folder_list)
+##For getting ensembles
+    folder_list<-c("ensemble_sMAPES_2")
+    names_list<-dir("ensemble_sMAPES_2")[grep("sMAPES",dir("ensemble_sMAPES_2"))]
+    names_list<-gsub(".RData","",names_list)
+    names_list<-names_list[order(x,decreasing=FALSE)[1:4]]
+    names_list<-names_list[c(1,4,2,3)]
+    #my_method <- as.character(1:200)  # Length is set to 2 * 100
+    my_method<-c("Ensemble 1","Ensemble 2 ","Ensemble 3","Ensemble 4")
+
+    my_sMAPES<-import_multiple_smapes(names_list,folder_list)
+    all_metrics <- data.frame(Name = character(), Horizon = integer(), Type = character(), Value = numeric())
+
+##
 
 
-##This is only to write smapes to the sMAPE folder...if you need to
-# my_forecasts<-read_forecasts(folder = 'MLP_Forecasts',name = "MLP_forecast_combined")
-#
-# my_sMAPES<-sMAPE_calculate(json_file,my_forecasts)
-# my_sMAPES
-# write_sMAPES(my_sMAPES,'sMAPES','MLP')
+
+
+
+##For all single methods at a time
+
+    names_list<-c("ARIMA_sMAPES_","ARIMA_CochraneOrc_forecast_1428_sMAPES_","HW_ADDI_sMAPES_","HW_MULTI_sMAPES_",'Theta_forecast_1428_sMAPES_','CES_forecast_1428_sMAPES_',
+                  'ES_forecast_1428_sMAPES_',
+                  "MLP_sMAPES_",'DeepAR_forecast_sMAPES_','LSTM_forecast_sMAPES_')
+    folder_list<-c("sMAPES")
+    my_method <- c("ARIMA Differenced", "ARIMA Cochrane", "HW Add","HW Multi","Theta",'CES','ES',"MLP","DeepAR","LSTM")
+    my_sMAPES<-import_multiple_smapes(names_list,folder_list)
+
+##
+
+
+##
+
+
+##For best single methods and ensembles at a time
+
+      names_list<-c("ARIMA_sMAPES_",'Theta_forecast_1428_sMAPES_','CES_forecast_1428_sMAPES_',
+                    'Ensemble_median76_sMAPES_','Ensemble_mean76_sMAPES_','Ensemble_median1_sMAPES_','Ensemble_mean1_sMAPES_')
+      folder_list<-c("sMAPES")
+      my_method <- c("ARIMA Differenced","Theta",'CES','Ensemble 1','Ensemble 2','Ensemble 3','Ensemble 4')
+      my_sMAPES<-import_multiple_smapes(names_list,folder_list)
 
 ##################################################################################
 
 ##This formats everything for the table..This is for the MEAN
+
 all_metrics <- data.frame(Name = character(), Horizon = integer(), Type = character(), Value = numeric())
 
-my_method <- c("ARIMA", "HW Mult", "HW Add","Theta",'CES',"MLP",'ENS 1','ENS 2','ENS 3','ENS 4','ENS 5')
-#ENS 1 = All HW, MLP, ARIMA mean
-#ENS 2 = All HW, MLP, ARIMA median
-#ENS 3 = ARIMA MLP mean
-#ENS 4 = HW_Add MLP mean
-#ENS 5 = HW Add/multi, ARIMA, MLP, CES,Theta
-#
+
 sapply(1:length(my_method), function(x) {
   temp <- data.frame(Mean = my_sMAPES[[x]]$Mean, Median = my_sMAPES[[x]]$Median, Horizon = 2:18)
   temp_long <- gather(temp, key = "Type", value = "Value", Mean, Median)
@@ -71,7 +92,7 @@ tableHTML(temp_mean,rownames = FALSE,widths = c(200,rep(100,17)),collapse = 'sep
   add_css_header(css = list( c('height','border-bottom','background-color','color','font-size'), c('10px','5px solid steelblue','steelblue','white','30px')),headers = 1:19)
 
 
-
+tableHTML::write_tableHTML(table,"C:\\Users\\tavin\\OneDrive\\Desktop\\Capstone_git_main\\Capstone\\R\\100_ensembles_2.html")
 render_tableHTML(table)
 #############################################################
 
@@ -138,19 +159,17 @@ palette<-c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e
 
 all_metrics[all_metrics$Type=='Mean',]%>% ggplot(aes(x=Horizon,y=Value,color=Name))+geom_line(size=1.2)+
   ylab("sMAPE")+theme_clean()+theme(axis.title = element_text(face="bold"),axis.text = element_text(face="bold"))+
-  ggtitle("Horizon vs sMAPE")+theme(plot.title = element_text(hjust=.5))+scale_color_manual(name = "Measure and Model",values=palette)
+  ggtitle("Top Ensembles and Single Method: Horizon vs sMAPE")+theme(plot.title = element_text(hjust=.5))+scale_color_manual(name = "Ensemble Key",values=palette)
 
 
 ### Get domain of each forecast
 
-    name='CES_forecast_1428'
-    folder = 'CES_Forecasts'
+    name='Ensemble_median76_sMAPES_'
+    folder = 'ensemble_sMAPES_2'
     Monthly_Domains <- read.csv("C:/Users/tavin/OneDrive/Desktop/Capstone_git_main/Capstone/R/Monthly_Domains.csv")
-
     domain_array<-rep(Monthly_Domains$Category,17)
     domain_array<-gsub(" ","",domain_array)
-   domain_array<-paste(domain_array,"CES")
-
+    my_sMAPES<-readRDS('ensemble_sMAPES_2/Ensemble_median76_sMAPES_.RData')
 
     my_forecasts<-read_forecasts(folder = folder,name = name)
 
@@ -160,7 +179,7 @@ all_metrics[all_metrics$Type=='Mean',]%>% ggplot(aes(x=Horizon,y=Value,color=Nam
     unlist_smapes<-data.frame(unlist(my_sMAPES))
 
     #domain_forecasts
-    domain_forecasts_ces<-cbind(unlist_smapes,domain_array)
+    domain_forecasts<-cbind(unlist_smapes,domain_array)
 
     repeats <- c()
 
@@ -168,22 +187,34 @@ all_metrics[all_metrics$Type=='Mean',]%>% ggplot(aes(x=Horizon,y=Value,color=Nam
       repeats <- c(repeats, rep(i, 1428))
     }
 
-    domain_forecasts_ces$Horizon=repeats
+    domain_forecasts$Horizon=repeats
 
-    names(domain_forecasts_ces)<-c("sMAPES","Domain","Horizon")
+    names(domain_forecasts)<-c("sMAPES","Domain","Horizon")
     names(domain_forecasts)
-  domain_forecasts<-rbind(domain_forecasts_mlp,domain_forecasts_ces)
 
-    mean_data <- domain_forecasts %>%
+
+    mean_data_ARIMA <- domain_forecasts %>%
       group_by(Domain, Horizon) %>%
       summarize(mean_sMAPES = mean(`sMAPES`))
 
     # Plotting the mean MLP sMAPES against the Horizon, separated by Domai
-
-    mean_data%>% ggplot(aes(x=Horizon,y=mean_sMAPES,color=Domain))+geom_line(size=1.2)+
+library(ggplot2)
+    library(ggthemes)
+    mean_data_ARIMA%>% ggplot(aes(x=Horizon,y=mean_sMAPES,color=Domain))+geom_line(size=1.2)+
       ylab("sMAPE")+theme_clean()+theme(axis.title = element_text(face="bold"),axis.text = element_text(face="bold"))+
-      ggtitle("CES sMAPES by Domain")+theme(plot.title = element_text(hjust=.5))
+      ggtitle("ARIMA sMAPES by Domain")+theme(plot.title = element_text(hjust=.5))
     #+scale_color_manual(name = "Measure and Model",values=palette)
+
+
+install.packages('gridExtra')
+    library(gridExtra)
+grob1<-ggplotGrob(mean_data_ARIMA)
+grob2<-ggplotGrob(mean_data_ces)
+grob3<-ggplotGrob(mean_data_DeepAR)
+grob4<-ggplotGrob(mean_data_Theta)
+combined_plot <- grid.arrange(mean_data_ARIMA, mean_data_ces, mean_data_DeepAR, mean_data_Theta, nrow = 2, ncol = 2)
+
+
 
     palette<-c("#00CD66", "#CD3278", "#36648B", "#CDAD00", "#CD7F32", "#BA55D3")
     palette<-c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",

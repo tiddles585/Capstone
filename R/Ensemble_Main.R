@@ -29,14 +29,14 @@ ARIMA_FORECASTS<-readRDS(paste0('ARIMA_Forecasts','/',"ARIMA_CochraneOrc_forecas
                               'CES_forecast_1428','Theta_forecast_1428','ES_forecast_1428')
 
 
-            DL_Folders<-c(MLP_Folder,DeepAR_Folder)
-            DL_Forecasts<-c('MLP_forecast_combined','DeepAR_forecast')
+            DL_Folders<-c(MLP_Folder,DeepAR_Folder,LSTM_Folder)
+            DL_Forecasts<-c('MLP_forecast_combined','DeepAR_forecast','LSTM_forecast')
 
 
 
             ##Creates all the different combinations of lists
 
-            Num_ensembles=10
+            Num_ensembles=100
 
                 stat_combos<-get_all_inx(up_to=length(Stat_Folders),how_many = Num_ensembles,replace_sample = FALSE)
                 DL_combos<-get_all_inx(up_to=length(DL_Folders),min_combo = 1,how_many=Num_ensembles,replace_sample=TRUE)
@@ -63,18 +63,18 @@ ARIMA_FORECASTS<-readRDS(paste0('ARIMA_Forecasts','/',"ARIMA_CochraneOrc_forecas
 
           ##THESE ARE CHANGEABLE AND MUST LINE UP IE if ARIMA_Folder is first in list_of_folders, then an ARIMA Model must be first in List_of_ensembles
 
-            source('Functions.R')
-            source('Preprocess.R')
-
-            List_of_Folders<- Final_Folder_Lists[[10]]
-            List_of_Ensembles<-Final_Forecasts_Lists[[10]]
-
-            List_of_Folders<-c(ARIMA_Folder,HW_Folder,HW_Folder,ARIMA_Folder,CES_Folder,Theta_Folder,ES_Folder)
-            List_of_Ensembles<-c("ARIMA_CochraneOrc_forecast_1428",'HW_ADDI_forecast_1428',
-                              'HW_MULTI_forecast_1428','ARIMA_All_difference_forecast_1428',
-                              'CES_forecast_1428','Theta_forecast_1428','ES_forecast_1428')
+            # source('Functions.R')
+            # source('Preprocess.R')
+            #
+            # List_of_Folders<- Final_Folder_Lists[[10]]
+            # List_of_Ensembles<-Final_Forecasts_Lists[[10]]
+            #
+            # List_of_Folders<-c(ARIMA_Folder,HW_Folder,HW_Folder,ARIMA_Folder,CES_Folder,Theta_Folder,ES_Folder)
+            # List_of_Ensembles<-c("ARIMA_CochraneOrc_forecast_1428",'HW_ADDI_forecast_1428',
+            #                   'HW_MULTI_forecast_1428','ARIMA_All_difference_forecast_1428',
+            #                   'CES_forecast_1428','Theta_forecast_1428','ES_forecast_1428')
 start=Sys.time()
-for(x in 1:10){
+for(x in 1:100){
 
 
             List_of_Folders<-Final_Folder_Lists[[x]]
@@ -104,16 +104,18 @@ for(x in 1:10){
             summary_all_horizons(my_sMAPES_median)
             #summary_all_horizons(my_sMAPES_smape)
 
-            write_sMAPES(my_sMAPES_mean,'sMAPES',paste0('Ensemble_',x))
-
+            write_sMAPES(my_sMAPES_mean,'ensemble_sMAPES_2',paste0('Ensemble_mean',x))
+            write_sMAPES(my_sMAPES_median,'ensemble_sMAPES_2',paste0('Ensemble_median',x))
+            message(x)
 }
 
     ##WRITE
-            write_sMAPES(my_sMAPES_mean,'sMAPES','HWADDnMult_MLP_ARIMA_CES_Theta_mean')
+
 Sys.time()-start
 
+saveRDS(Final_Forecasts_Lists, file="C:\\Users\\tavin\\OneDrive\\Desktop\\Capstone_git_main\\Capstone\\R\\ensemble_sMAPES_2\\ensemble_names.RData")
 
-
+Final_Forecasts_Lists
 
 
 
