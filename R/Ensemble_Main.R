@@ -12,11 +12,13 @@ get_all_directory_forecasts()
     #Names of Folders
 
             ARIMA_Folder="ARIMA_Forecasts"
+            HW_Folder='HW_Forecasts'
             ES_Folder='ES_Forecasts'
             CES_Folder='CES_Forecasts'
             Theta_Folder='Theta_Forecasts'
             MLP_Folder='MLP_Forecasts'
             LSTM_Folder="LSTM_Forecasts"
+            DeepAR_Folder="DeepAR_Forecasts"
 
             #These are defined in Main as well, (crappy programming choice)
             horizon=2:18
@@ -24,14 +26,27 @@ get_all_directory_forecasts()
 
           ##THESE ARE CHANGEABLE AND MUST LINE UP IE if ARIMA_Folder is first in list_of_folders, then an ARIMA Model must be first in List_of_ensembles
 
-            List_of_Folders<-c(ARIMA_Folder,ES_Folder,
-                               #CES_Folder,Theta_Folder,
-                               MLP_Folder)
-            List_of_Ensembles<-c("ARIMA_CochraneOrc_forecast_1428",
-                                 #"ARIMA_All_difference_forecast_1428",
+            List_of_Folders<-c(ARIMA_Folder,
+                               ARIMA_Folder,
+                               HW_Folder,
+                               HW_Folder,
+                               ES_Folder,
+                               #CES_Folder,
+                               Theta_Folder,
+                               #LSTM_Forecasts,
+                               MLP_Folder,
+                               DeepAR_Folder
+                               )
+            List_of_Ensembles<-c("ARIMA_All_difference_forecast_1428",
+                                 "ARIMA_CochraneOrc_forecast_1428",            
+                                 'HW_ADDI_forecast_1428',
+                                 'HW_MULTI_forecast_1428',
                                  'ES_forecast_1428',
-                                 #'CES_forecast_1428','Theta_forecast_1428',
-                                 'MLP_forecast_combined'
+                                 #'CES_forecast_1428',
+                                 'Theta_forecast_1428',
+                                 #'LSTM_forecasts_1428',        # might be broken, ask from Tavin
+                                 'MLP_forecast_combined',
+                                 'DeepAR_forecast'
                                  )
 
   ##RUNNERS
@@ -54,7 +69,7 @@ get_all_directory_forecasts()
             
             name='ARIMA_ES_MLP_mean'
             write_sMAPES(my_sMAPES_mean,'sMAPES',name)
-            name='ARIMA_ES_MLP_median'
+            name='60_median'
             write_sMAPES(my_sMAPES_median,'sMAPES',name)
 
             summary_all_horizons(my_sMAPES_mean)

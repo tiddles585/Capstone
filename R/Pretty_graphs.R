@@ -6,14 +6,16 @@ library(tableHTML)
 library(flextable)
 
 ##import sMAPES and combine
-names_list<-c("ARIMA_sMAPES_",'ES_forecast_1428_sMAPES_','CES_forecast_1428_sMAPES_','Theta_forecast_1428_sMAPES_',
-              "MLP_sMAPES_",
+names_list<-c('ARIMA_sMAPES_','ES_forecast_1428_sMAPES_','CES_forecast_1428_sMAPES_','Theta_forecast_1428_sMAPES_',
+              'LSTM_forecast_sMAPES_','MLP_sMAPES_','DeepAR_forecast_sMAPES_',
               "ARIMA_ALLHW_MLP_mean_sMAPES_",'ARIMA_ALLHW_MLP_median_sMAPES_',
-              #"ARIMA_ES_MLP_mean_sMAPES_",'ARIMA_ES_MLP_median_sMAPES_',
+              #"ARIMA_ES_MLP_mean_sMAPES_",'ARIMA_ES_MLP_median_sMAPES_',       # omitted for presentation, need in paper
               "ARIMAAll_ES_MLP_mean_sMAPES_",'ARIMAAll_ES_MLP_median_sMAPES_',
-              #'ARIMA_MLP_mean_sMAPES_','HWADD_MLP_mean_sMAPES_',
-              #'HWADDnMult_MLP_ARIMA_CES_Theta_mean_sMAPES_',
-              'ARIMA_ES_CES_Theta_mean_sMAPES_','ARIMA_ES_CES_Theta_median_sMAPES_')
+              #'ARIMA_MLP_mean_sMAPES_','HWADD_MLP_mean_sMAPES_',               # omitted since under-performing
+              #'HWADDnMult_MLP_ARIMA_CES_Theta_mean_sMAPES_',                   # omitted since under-performing
+              'ARIMA_ES_CES_Theta_mean_sMAPES_','ARIMA_ES_CES_Theta_median_sMAPES_',
+              '60_median_sMAPES_'
+              )
 folder_list<-c("sMAPES")
 
 my_sMAPES<-import_multiple_smapes(names_list,folder_list)
@@ -31,13 +33,15 @@ my_sMAPES<-import_multiple_smapes(names_list,folder_list)
 all_metrics <- data.frame(Name = character(), Horizon = integer(), Type = character(), Value = numeric())
 
 my_method <- c("ARIMA","ETS",'CES',"Theta",
-               "MLP",
+               "LSTM","MLP",'DeepAR',
                'ENS1','ENS2',
-               #'ENS1A','ENS2A',
+               #'ENS1A','ENS2A',            # omitted for presentation, need in paper
                'ENS1B','ENS2B',
                #'ENS3','ENS4',
                #'ENS5',
-               'ENS6','ENS7')
+               'ENS6','ENS7',
+               'ENS60Med'
+               )
 #ENS 1 = All HW, MLP, ARIMA mean
 #ENS 2 = All HW, MLP, ARIMA median
 #ENS 3 = ARIMA MLP mean
@@ -70,7 +74,7 @@ min_vals <- apply(temp_mean[,-1], 2, min)
 
 
 tableHTML(temp_mean,rownames = FALSE,widths = c(200,rep(100,17)),collapse = 'separate',spacing = '3px',
-          border = 0 ,second_headers=list(18,c('Mean sMAPE Values on Horizons 2-18')))%>%
+          border = 0 ,second_headers=list(18,c('Average sMAPE Values of Horizons 2-18')))%>%
   add_css_conditional_column(conditional = 'min',
                              same_scale=FALSE,
                              css = list('border', '5px solid #CD7F32'),

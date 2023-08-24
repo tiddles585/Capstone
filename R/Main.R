@@ -21,8 +21,8 @@
 
 
     #name='HW_ADDI_forecast_1428'
-    name='CES_forecast_1428'
-    folder = 'CES_Forecasts'
+    name='Theta_forecasts_1428'
+    folder = 'Theta_Forecasts'
 
     #name='ARIMA_CochraneOrc_forecast_1428'
     #folder = 'ARIMA_Forecasts'
