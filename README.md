@@ -21,8 +21,9 @@ Badge [source](https://shields.io/)
   - [Data Source](#data-source)
   - [Methods](#methods)
   - [Tech Stack](#tech-stack)
-  - [Quick glance at the results](#quick-glance-at-the-results)
-  - [Limitation and what can be improved](#limitation-and-what-can-be-improved)
+  - [Results](#results)
+  - [Discussion](#discussion)
+  - [Future Work](#future-work)
   - [Repository Structure](#repository-structure)
 
 ## Problem Statement
@@ -54,17 +55,11 @@ By using ensembles that combine the satisfactory forecasts of multiple models, t
 - R (refer to [here](https://github.com/tiddles585/Capstone/blob/duy_branch/R/Functions.R) for the libraries used)
 - Python (used to implement LSTM and DeepAR)
 
-## Quick glance at the results
-
-Correlation between the features.
+## Results
 
 ![sMAPES_individual](assets/sMAPES_individual.png)
 
-Confusion matrix of gradient boosting classifier.
-
 ![plot_sMAPES_individual](assets/plot_sMAPES_individual.png)
-
-ROC curve of gradient boosting classifier.
 
 ![sMAPES_ensembles](assets/sMAPES_ensembles.png)
 
@@ -78,5 +73,11 @@ Top method
 
 ![Ensemble1_by_domains](assets/Ensemble1_by_domains.png)
 
+## Discussion
+TODO (lesson learned)
 
+## Future Work
+TODO
 
+## Repository Structure
+TODO
