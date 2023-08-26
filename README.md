@@ -8,7 +8,7 @@
 
 Badge [source](https://shields.io/)
 
-# Key findings: Ensembling forecasts with multiple statistical and deep learning models using median or mean schemes leads to better performance across all forecasting horizons.
+# Key findings: Combining the forecasts of the following models via the median leads to the best overall performance for the monthly data of the M3-Competition (Makridakis et al.): ARIMA, CES, Theta, and DeepAR.
 
 ## Authors
 
